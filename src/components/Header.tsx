@@ -184,6 +184,8 @@ const Header = () => {
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="p-2 text-gray-600 hover:text-blue-600 transition-colors"
+                >
+                  <Facebook className="h-5 w-5" />
                 </a>
                 <a 
                   href="https://wa.me/2347089513080" 
