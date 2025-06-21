@@ -42,8 +42,8 @@ const NewsSlider = ({ posts }: NewsSliderProps) => {
 
   if (sliderPosts.length === 0) {
     return (
-      <div className="relative h-96 bg-gradient-to-r from-blue-100 to-blue-200 flex items-center justify-center">
-        <div className="text-blue-400 text-4xl font-bold opacity-20">
+      <div className="relative h-64 md:h-96 bg-gradient-to-r from-blue-100 to-blue-200 flex items-center justify-center rounded-lg">
+        <div className="text-blue-400 text-2xl md:text-4xl font-bold opacity-20">
           No featured posts available
         </div>
       </div>
@@ -51,7 +51,7 @@ const NewsSlider = ({ posts }: NewsSliderProps) => {
   }
 
   return (
-    <div className="relative h-96 overflow-hidden rounded-lg shadow-lg">
+    <div className="relative h-64 md:h-96 overflow-hidden rounded-lg shadow-lg">
       {sliderPosts.map((post, index) => (
         <div
           key={post.id}
@@ -69,7 +69,7 @@ const NewsSlider = ({ posts }: NewsSliderProps) => {
               />
             ) : (
               <div className="w-full h-full bg-gradient-to-r from-blue-100 to-blue-200 flex items-center justify-center">
-                <div className="text-blue-400 text-6xl font-bold opacity-20">
+                <div className="text-blue-400 text-4xl md:text-6xl font-bold opacity-20">
                   NEWS
                 </div>
               </div>
@@ -79,24 +79,24 @@ const NewsSlider = ({ posts }: NewsSliderProps) => {
             <div className="absolute inset-0 bg-black bg-opacity-40"></div>
             
             {/* Content */}
-            <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
-              <div className="flex items-center gap-4 text-sm mb-3">
-                <span className="bg-blue-600 px-3 py-1 rounded-full font-medium">
+            <div className="absolute bottom-0 left-0 right-0 p-4 md:p-8 text-white">
+              <div className="flex flex-wrap items-center gap-2 md:gap-4 text-xs md:text-sm mb-2 md:mb-3">
+                <span className="bg-blue-600 px-2 md:px-3 py-1 rounded-full font-medium">
                   {post.category}
                 </span>
                 <div className="flex items-center gap-1">
-                  <Calendar className="h-4 w-4" />
+                  <Calendar className="h-3 md:h-4 w-3 md:w-4" />
                   <span>{new Date(post.date).toLocaleDateString()}</span>
                 </div>
                 <div className="flex items-center gap-1">
-                  <User className="h-4 w-4" />
+                  <User className="h-3 md:h-4 w-3 md:w-4" />
                   <span>{post.author}</span>
                 </div>
               </div>
-              <h2 className="text-2xl md:text-3xl font-bold mb-3 line-clamp-2">
+              <h2 className="text-lg md:text-2xl lg:text-3xl font-bold mb-2 md:mb-3 line-clamp-2">
                 {post.title}
               </h2>
-              <p className="text-lg text-gray-200 line-clamp-2">
+              <p className="text-sm md:text-lg text-gray-200 line-clamp-2 hidden sm:block">
                 {post.excerpt}
               </p>
             </div>
@@ -109,27 +109,27 @@ const NewsSlider = ({ posts }: NewsSliderProps) => {
         <>
           <button
             onClick={prevSlide}
-            className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-20 hover:bg-opacity-30 text-white p-2 rounded-full transition-all"
+            className="absolute left-2 md:left-4 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-20 hover:bg-opacity-30 text-white p-1 md:p-2 rounded-full transition-all"
           >
-            <ChevronLeft className="h-6 w-6" />
+            <ChevronLeft className="h-4 md:h-6 w-4 md:w-6" />
           </button>
           <button
             onClick={nextSlide}
-            className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-20 hover:bg-opacity-30 text-white p-2 rounded-full transition-all"
+            className="absolute right-2 md:right-4 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-20 hover:bg-opacity-30 text-white p-1 md:p-2 rounded-full transition-all"
           >
-            <ChevronRight className="h-6 w-6" />
+            <ChevronRight className="h-4 md:h-6 w-4 md:w-6" />
           </button>
         </>
       )}
 
       {/* Dots Indicator */}
       {sliderPosts.length > 1 && (
-        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
+        <div className="absolute bottom-2 md:bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
           {sliderPosts.map((_, index) => (
             <button
               key={index}
               onClick={() => setCurrentSlide(index)}
-              className={`w-3 h-3 rounded-full transition-all ${
+              className={`w-2 md:w-3 h-2 md:h-3 rounded-full transition-all ${
                 index === currentSlide ? 'bg-white' : 'bg-white bg-opacity-50'
               }`}
             />
