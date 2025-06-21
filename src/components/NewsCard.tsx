@@ -1,5 +1,6 @@
 
 import { Calendar, User, ArrowRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 interface NewsPost {
   id: string;
@@ -60,10 +61,13 @@ const NewsCard = ({ post }: NewsCardProps) => {
             <span>{post.author}</span>
           </div>
           
-          <button className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 text-sm font-medium transition-colors">
+          <Link 
+            to={`/article/${post.id}`}
+            className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 text-sm font-medium transition-colors"
+          >
             Read More
             <ArrowRight className="h-3 w-3" />
-          </button>
+          </Link>
         </div>
       </div>
     </article>
