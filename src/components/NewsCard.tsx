@@ -1,6 +1,5 @@
 
 import { Calendar, User, ArrowRight } from 'lucide-react';
-import { Link } from 'react-router-dom';
 
 interface NewsPost {
   id: string;
@@ -36,14 +35,14 @@ const NewsCard = ({ post }: NewsCardProps) => {
         </div>
       )}
       
-      <div className="p-4 sm:p-6">
-        <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-sm text-gray-600 mb-3">
+      <div className="p-6">
+        <div className="flex items-center gap-3 text-sm text-gray-600 mb-3">
           <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium">
             {post.category}
           </span>
           <div className="flex items-center gap-1">
             <Calendar className="h-3 w-3" />
-            <span className="text-xs sm:text-sm">{new Date(post.date).toLocaleDateString()}</span>
+            <span>{new Date(post.date).toLocaleDateString()}</span>
           </div>
         </div>
         
@@ -61,13 +60,10 @@ const NewsCard = ({ post }: NewsCardProps) => {
             <span>{post.author}</span>
           </div>
           
-          <Link
-            to={`/article/${post.id}`}
-            className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 text-sm font-medium transition-colors"
-          >
+          <button className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 text-sm font-medium transition-colors">
             Read More
             <ArrowRight className="h-3 w-3" />
-          </Link>
+          </button>
         </div>
       </div>
     </article>

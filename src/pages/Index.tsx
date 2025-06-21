@@ -87,25 +87,27 @@ const Index = () => {
       
       {!isSearching && <>
           {/* Hero Section with Slider */}
-          <section className="bg-gradient-to-r from-blue-900 to-blue-700 text-white py-8 px-4">
-            <div className="container mx-auto">
+          <section className="bg-gradient-to-r from-blue-900 to-blue-700 text-white py-8">
+            <div className="container mx-auto px-4">
               <div className="text-center max-w-4xl mx-auto mb-8">
-                <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">News You Can Trust</h1>
+                <h1 className="text-4xl md:text-5xl font-bold mb-4">News You Can Trust</h1>
+                
+                
               </div>
               
               {/* News Slider in Hero */}
               <div className="max-w-6xl mx-auto">
-                <NewsSlider posts={posts.slice(0, 3)} />
+                <NewsSlider posts={featuredPosts.length > 0 ? featuredPosts : posts} />
               </div>
             </div>
           </section>
 
           {/* Categories Section */}
-          <section className="py-8 md:py-12 bg-white">
+          <section className="py-12 bg-white">
             <div className="container mx-auto px-4">
-              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6 md:mb-8 text-center">Browse by Category</h2>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4">
-                {categories.map(category => <Link key={category} to={`/category/${category.toLowerCase()}`} className="bg-blue-50 hover:bg-blue-100 text-blue-800 text-center py-3 md:py-4 px-4 md:px-6 rounded-lg font-medium transition-colors text-sm md:text-base">
+              <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Browse by Category</h2>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                {categories.map(category => <Link key={category} to={`/category/${category.toLowerCase()}`} className="bg-blue-50 hover:bg-blue-100 text-blue-800 text-center py-4 px-6 rounded-lg font-medium transition-colors">
                     {category}
                   </Link>)}
               </div>
@@ -114,12 +116,12 @@ const Index = () => {
         </>}
 
       {/* Recent News / Search Results */}
-      <section className={`py-8 md:py-12 ${isSearching ? 'pt-8' : ''} ${!isSearching ? 'bg-gray-50' : 'bg-white'}`}>
+      <section className={`py-12 ${isSearching ? 'pt-8' : ''} ${!isSearching ? 'bg-gray-50' : 'bg-white'}`}>
         <div className="container mx-auto px-4">
-          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6 md:mb-8 text-center">
+          <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">
             {isSearching ? `Search Results for "${searchQuery}"` : 'Latest News'}
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {recentPosts.map(post => <NewsCard key={post.id} post={post} />)}
           </div>
           {recentPosts.length === 0 && <div className="text-center py-12">
@@ -135,50 +137,50 @@ const Index = () => {
       </section>
 
       {/* Footer */}
-      <footer className="bg-blue-900 text-white py-8 md:py-12">
+      <footer className="bg-blue-900 text-white py-12">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div>
-              <img src="/lovable-uploads/2c273c4c-afb1-4bdd-a4b3-a17ece37b93a.png" alt="TNTV Network" className="h-10 md:h-12 mb-4" />
-              <p className="text-blue-200 text-sm md:text-base">
+              <img src="/lovable-uploads/2c273c4c-afb1-4bdd-a4b3-a17ece37b93a.png" alt="TNTV Network" className="h-12 mb-4" />
+              <p className="text-blue-200">
                 Your trusted source for comprehensive news coverage and insightful reporting.
               </p>
             </div>
             <div>
               <h3 className="font-bold text-lg mb-4">Quick Links</h3>
               <ul className="space-y-2 text-blue-200">
-                <li><Link to="/" className="hover:text-white transition-colors text-sm md:text-base">Home</Link></li>
-                <li><Link to="/category/politics" className="hover:text-white transition-colors text-sm md:text-base">Politics</Link></li>
-                <li><Link to="/category/business" className="hover:text-white transition-colors text-sm md:text-base">Business</Link></li>
-                <li><Link to="/category/technology" className="hover:text-white transition-colors text-sm md:text-base">Technology</Link></li>
+                <li><Link to="/" className="hover:text-white transition-colors">Home</Link></li>
+                <li><Link to="/category/politics" className="hover:text-white transition-colors">Politics</Link></li>
+                <li><Link to="/category/business" className="hover:text-white transition-colors">Business</Link></li>
+                <li><Link to="/category/technology" className="hover:text-white transition-colors">Technology</Link></li>
               </ul>
             </div>
             <div>
               <h3 className="font-bold text-lg mb-4">Contact Us</h3>
               <div className="space-y-3 text-blue-200">
                 <div className="flex items-center gap-3">
-                  <Phone className="h-4 md:h-5 w-4 md:w-5" />
-                  <span className="text-sm md:text-base">+234 708 951 3080</span>
+                  <Phone className="h-5 w-5" />
+                  <span>+234 708 951 3080</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <MessageCircle className="h-4 md:h-5 w-4 md:w-5" />
-                  <span className="text-sm md:text-base">+234 708 951 3080</span>
+                  <MessageCircle className="h-5 w-5" />
+                  <span>+234 708 951 3080</span>
                 </div>
                 <div className="flex items-center space-x-4 mt-4">
-                  <a href="https://www.instagram.com/tntvnetwork/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-white transition-colors text-sm md:text-base">
-                    <Instagram className="h-4 md:h-5 w-4 md:w-5" />
+                  <a href="https://www.instagram.com/tntvnetwork/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-white transition-colors">
+                    <Instagram className="h-5 w-5" />
                     <span>Instagram</span>
                   </a>
-                  <a href="https://www.facebook.com/TnTvNetwork/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-white transition-colors text-sm md:text-base">
-                    <Facebook className="h-4 md:h-5 w-4 md:w-5" />
+                  <a href="https://www.facebook.com/TnTvNetwork/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-white transition-colors">
+                    <Facebook className="h-5 w-5" />
                     <span>Facebook</span>
                   </a>
                 </div>
               </div>
             </div>
           </div>
-          <div className="border-t border-blue-800 mt-6 md:mt-8 pt-6 md:pt-8 text-center text-blue-300">
-            <p className="text-sm md:text-base">&copy; 2024 TNTV Network. All rights reserved.</p>
+          <div className="border-t border-blue-800 mt-8 pt-8 text-center text-blue-300">
+            <p>&copy; 2024 TNTV Network. All rights reserved.</p>
           </div>
         </div>
       </footer>
