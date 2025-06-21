@@ -91,23 +91,8 @@ const Index = () => {
             <div className="container mx-auto px-4">
               <div className="text-center max-w-4xl mx-auto mb-8">
                 <h1 className="text-4xl md:text-5xl font-bold mb-4">News You Can Trust</h1>
-                <p className="text-lg md:text-xl mb-6 text-blue-100">
-                  Stay informed with TNTV Network's comprehensive coverage of local and global events
-                </p>
-                <div className="flex flex-wrap justify-center gap-8 text-blue-200">
-                  <div className="flex items-center gap-2">
-                    <Tv className="h-5 w-5" />
-                    <span>Live Coverage</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Globe className="h-5 w-5" />
-                    <span>Global Reach</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Users className="h-5 w-5" />
-                    <span>Trusted by Millions</span>
-                  </div>
-                </div>
+                
+                
               </div>
               
               {/* News Slider in Hero */}
