@@ -1,7 +1,6 @@
-
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Tv, Globe, Users } from 'lucide-react';
+import { ArrowRight, Tv, Globe, Users, Instagram, Facebook, MessageCircle, Phone } from 'lucide-react';
 import Header from '../components/Header';
 import NewsCard from '../components/NewsCard';
 import NewsSlider from '../components/NewsSlider';
@@ -107,14 +106,14 @@ const Index = () => {
       
       {!isSearching && (
         <>
-          {/* Hero Section */}
-          <section className="bg-gradient-to-r from-blue-900 to-blue-700 text-white py-16">
+          {/* Hero Section with Slider */}
+          <section className="bg-gradient-to-r from-blue-900 to-blue-700 text-white py-8">
             <div className="container mx-auto px-4">
-              <div className="text-center max-w-4xl mx-auto">
-                <h1 className="text-5xl md:text-6xl font-bold mb-6">
+              <div className="text-center max-w-4xl mx-auto mb-8">
+                <h1 className="text-4xl md:text-5xl font-bold mb-4">
                   Your Trusted Source for News
                 </h1>
-                <p className="text-xl md:text-2xl mb-8 text-blue-100">
+                <p className="text-lg md:text-xl mb-6 text-blue-100">
                   Stay informed with TNTV Network's comprehensive coverage of local and global events
                 </p>
                 <div className="flex flex-wrap justify-center gap-8 text-blue-200">
@@ -132,14 +131,11 @@ const Index = () => {
                   </div>
                 </div>
               </div>
-            </div>
-          </section>
-
-          {/* News Slider */}
-          <section className="py-12">
-            <div className="container mx-auto px-4">
-              <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Featured Stories</h2>
-              <NewsSlider posts={featuredPosts.length > 0 ? featuredPosts : posts} />
+              
+              {/* News Slider in Hero */}
+              <div className="max-w-6xl mx-auto">
+                <NewsSlider posts={featuredPosts.length > 0 ? featuredPosts : posts} />
+              </div>
             </div>
           </section>
 
@@ -218,25 +214,33 @@ const Index = () => {
             </div>
             <div>
               <h3 className="font-bold text-lg mb-4">Contact Us</h3>
-              <div className="space-y-2 text-blue-200">
-                <p>Phone: +234 708 951 3080</p>
-                <p>WhatsApp: +234 708 951 3080</p>
+              <div className="space-y-3 text-blue-200">
+                <div className="flex items-center gap-3">
+                  <Phone className="h-5 w-5" />
+                  <span>+234 708 951 3080</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <MessageCircle className="h-5 w-5" />
+                  <span>+234 708 951 3080</span>
+                </div>
                 <div className="flex items-center space-x-4 mt-4">
                   <a 
                     href="https://www.instagram.com/tntvnetwork/" 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="hover:text-white transition-colors"
+                    className="flex items-center gap-2 hover:text-white transition-colors"
                   >
-                    Instagram
+                    <Instagram className="h-5 w-5" />
+                    <span>Instagram</span>
                   </a>
                   <a 
                     href="https://www.facebook.com/TnTvNetwork/" 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="hover:text-white transition-colors"
+                    className="flex items-center gap-2 hover:text-white transition-colors"
                   >
-                    Facebook
+                    <Facebook className="h-5 w-5" />
+                    <span>Facebook</span>
                   </a>
                 </div>
               </div>
