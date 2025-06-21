@@ -1,9 +1,10 @@
 
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Calendar, User, ArrowRight, Tv, Globe, Users } from 'lucide-react';
+import { ArrowRight, Tv, Globe, Users } from 'lucide-react';
 import Header from '../components/Header';
 import NewsCard from '../components/NewsCard';
+import NewsSlider from '../components/NewsSlider';
 
 interface NewsPost {
   id: string;
@@ -14,11 +15,14 @@ interface NewsPost {
   date: string;
   image?: string;
   category: string;
+  featured?: boolean;
 }
 
 const Index = () => {
   const [posts, setPosts] = useState<NewsPost[]>([]);
-  const [featuredPost, setFeaturedPost] = useState<NewsPost | null>(null);
+  const [filteredPosts, setFilteredPosts] = useState<NewsPost[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isSearching, setIsSearching] = useState(false);
 
   useEffect(() => {
     // Load posts from localStorage
@@ -26,7 +30,7 @@ const Index = () => {
     if (savedPosts) {
       const parsedPosts = JSON.parse(savedPosts);
       setPosts(parsedPosts);
-      setFeaturedPost(parsedPosts[0] || null);
+      setFilteredPosts(parsedPosts);
     } else {
       // Initialize with sample data
       const samplePosts: NewsPost[] = [
@@ -38,7 +42,8 @@ const Index = () => {
           author: 'Sarah Johnson',
           date: '2024-06-21',
           category: 'Technology',
-          image: '/placeholder.svg'
+          image: '/placeholder.svg',
+          featured: true
         },
         {
           id: '2',
@@ -47,7 +52,8 @@ const Index = () => {
           content: 'In a landmark decision that could reshape global environmental policy...',
           author: 'Michael Chen',
           date: '2024-06-20',
-          category: 'Environment'
+          category: 'Environment',
+          featured: false
         },
         {
           id: '3',
@@ -56,100 +62,113 @@ const Index = () => {
           content: 'Recent economic data shows remarkable growth in the technology sector...',
           author: 'Emily Rodriguez',
           date: '2024-06-19',
-          category: 'Business'
+          category: 'Business',
+          featured: false
         }
       ];
       localStorage.setItem('news_posts', JSON.stringify(samplePosts));
       setPosts(samplePosts);
-      setFeaturedPost(samplePosts[0]);
+      setFilteredPosts(samplePosts);
     }
   }, []);
 
-  const recentPosts = posts.slice(1, 7);
+  useEffect(() => {
+    const handleSearch = (event: CustomEvent) => {
+      const query = event.detail;
+      setSearchQuery(query);
+      setIsSearching(true);
+      
+      if (query.trim() === '') {
+        setFilteredPosts(posts);
+        setIsSearching(false);
+      } else {
+        const filtered = posts.filter(post =>
+          post.title.toLowerCase().includes(query.toLowerCase()) ||
+          post.excerpt.toLowerCase().includes(query.toLowerCase()) ||
+          post.content.toLowerCase().includes(query.toLowerCase()) ||
+          post.category.toLowerCase().includes(query.toLowerCase()) ||
+          post.author.toLowerCase().includes(query.toLowerCase())
+        );
+        setFilteredPosts(filtered);
+      }
+    };
+
+    window.addEventListener('searchNews', handleSearch as EventListener);
+    return () => window.removeEventListener('searchNews', handleSearch as EventListener);
+  }, [posts]);
+
+  const featuredPosts = posts.filter(post => post.featured);
+  const recentPosts = isSearching ? filteredPosts : posts.slice(0, 6);
+  const categories = ['Technology', 'Business', 'Politics', 'Sports', 'Entertainment', 'Environment'];
 
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
       
-      {/* Hero Section */}
-      <section className="bg-gradient-to-r from-blue-900 to-blue-700 text-white py-16">
-        <div className="container mx-auto px-4">
-          <div className="text-center max-w-4xl mx-auto">
-            <h1 className="text-5xl md:text-6xl font-bold mb-6">
-              Your Trusted Source for News
-            </h1>
-            <p className="text-xl md:text-2xl mb-8 text-blue-100">
-              Stay informed with TNTV Network's comprehensive coverage of local and global events
-            </p>
-            <div className="flex flex-wrap justify-center gap-8 text-blue-200">
-              <div className="flex items-center gap-2">
-                <Tv className="h-5 w-5" />
-                <span>Live Coverage</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Globe className="h-5 w-5" />
-                <span>Global Reach</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Users className="h-5 w-5" />
-                <span>Trusted by Millions</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Featured Article */}
-      {featuredPost && (
-        <section className="py-12">
-          <div className="container mx-auto px-4">
-            <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Featured Story</h2>
-            <div className="max-w-4xl mx-auto">
-              <div className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300">
-                {featuredPost.image && (
-                  <div className="h-64 md:h-80 bg-gradient-to-r from-blue-100 to-blue-200 flex items-center justify-center">
-                    <img 
-                      src={featuredPost.image} 
-                      alt={featuredPost.title}
-                      className="w-full h-full object-cover"
-                    />
+      {!isSearching && (
+        <>
+          {/* Hero Section */}
+          <section className="bg-gradient-to-r from-blue-900 to-blue-700 text-white py-16">
+            <div className="container mx-auto px-4">
+              <div className="text-center max-w-4xl mx-auto">
+                <h1 className="text-5xl md:text-6xl font-bold mb-6">
+                  Your Trusted Source for News
+                </h1>
+                <p className="text-xl md:text-2xl mb-8 text-blue-100">
+                  Stay informed with TNTV Network's comprehensive coverage of local and global events
+                </p>
+                <div className="flex flex-wrap justify-center gap-8 text-blue-200">
+                  <div className="flex items-center gap-2">
+                    <Tv className="h-5 w-5" />
+                    <span>Live Coverage</span>
                   </div>
-                )}
-                <div className="p-8">
-                  <div className="flex items-center gap-4 text-sm text-gray-600 mb-4">
-                    <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full font-medium">
-                      {featuredPost.category}
-                    </span>
-                    <div className="flex items-center gap-1">
-                      <Calendar className="h-4 w-4" />
-                      <span>{new Date(featuredPost.date).toLocaleDateString()}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <User className="h-4 w-4" />
-                      <span>{featuredPost.author}</span>
-                    </div>
+                  <div className="flex items-center gap-2">
+                    <Globe className="h-5 w-5" />
+                    <span>Global Reach</span>
                   </div>
-                  <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
-                    {featuredPost.title}
-                  </h3>
-                  <p className="text-gray-700 text-lg leading-relaxed mb-6">
-                    {featuredPost.excerpt}
-                  </p>
-                  <button className="inline-flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors">
-                    Read Full Article
-                    <ArrowRight className="h-4 w-4" />
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <Users className="h-5 w-5" />
+                    <span>Trusted by Millions</span>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </section>
+          </section>
+
+          {/* News Slider */}
+          <section className="py-12">
+            <div className="container mx-auto px-4">
+              <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Featured Stories</h2>
+              <NewsSlider posts={featuredPosts.length > 0 ? featuredPosts : posts} />
+            </div>
+          </section>
+
+          {/* Categories Section */}
+          <section className="py-12 bg-white">
+            <div className="container mx-auto px-4">
+              <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Browse by Category</h2>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                {categories.map((category) => (
+                  <Link
+                    key={category}
+                    to={`/category/${category.toLowerCase()}`}
+                    className="bg-blue-50 hover:bg-blue-100 text-blue-800 text-center py-4 px-6 rounded-lg font-medium transition-colors"
+                  >
+                    {category}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </section>
+        </>
       )}
 
-      {/* Recent News */}
-      <section className="py-12 bg-white">
+      {/* Recent News / Search Results */}
+      <section className={`py-12 ${isSearching ? 'pt-8' : ''} ${!isSearching ? 'bg-gray-50' : 'bg-white'}`}>
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Latest News</h2>
+          <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">
+            {isSearching ? `Search Results for "${searchQuery}"` : 'Latest News'}
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {recentPosts.map((post) => (
               <NewsCard key={post.id} post={post} />
@@ -157,14 +176,18 @@ const Index = () => {
           </div>
           {recentPosts.length === 0 && (
             <div className="text-center py-12">
-              <p className="text-gray-600 text-lg">No news articles available yet.</p>
-              <Link 
-                to="/admin/login" 
-                className="inline-flex items-center gap-2 mt-4 text-blue-600 hover:text-blue-800 font-medium"
-              >
-                Access Admin Panel to Add News
-                <ArrowRight className="h-4 w-4" />
-              </Link>
+              <p className="text-gray-600 text-lg">
+                {isSearching ? 'No articles found for your search.' : 'No news articles available yet.'}
+              </p>
+              {!isSearching && (
+                <Link 
+                  to="/admin/login" 
+                  className="inline-flex items-center gap-2 mt-4 text-blue-600 hover:text-blue-800 font-medium"
+                >
+                  Access Admin Panel to Add News
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              )}
             </div>
           )}
         </div>
@@ -187,23 +210,36 @@ const Index = () => {
             <div>
               <h3 className="font-bold text-lg mb-4">Quick Links</h3>
               <ul className="space-y-2 text-blue-200">
-                <li><a href="#" className="hover:text-white transition-colors">About Us</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Contact</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Privacy Policy</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Terms of Service</a></li>
+                <li><Link to="/" className="hover:text-white transition-colors">Home</Link></li>
+                <li><Link to="/category/politics" className="hover:text-white transition-colors">Politics</Link></li>
+                <li><Link to="/category/business" className="hover:text-white transition-colors">Business</Link></li>
+                <li><Link to="/category/technology" className="hover:text-white transition-colors">Technology</Link></li>
               </ul>
             </div>
             <div>
-              <h3 className="font-bold text-lg mb-4">Connect With Us</h3>
-              <p className="text-blue-200 mb-4">
-                Stay updated with the latest news and developments.
-              </p>
-              <Link 
-                to="/admin/login"
-                className="text-blue-300 hover:text-white transition-colors text-sm"
-              >
-                Admin Access
-              </Link>
+              <h3 className="font-bold text-lg mb-4">Contact Us</h3>
+              <div className="space-y-2 text-blue-200">
+                <p>Phone: +234 708 951 3080</p>
+                <p>WhatsApp: +234 708 951 3080</p>
+                <div className="flex items-center space-x-4 mt-4">
+                  <a 
+                    href="https://www.instagram.com/tntvnetwork/" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="hover:text-white transition-colors"
+                  >
+                    Instagram
+                  </a>
+                  <a 
+                    href="https://www.facebook.com/TnTvNetwork/" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="hover:text-white transition-colors"
+                  >
+                    Facebook
+                  </a>
+                </div>
+              </div>
             </div>
           </div>
           <div className="border-t border-blue-800 mt-8 pt-8 text-center text-blue-300">

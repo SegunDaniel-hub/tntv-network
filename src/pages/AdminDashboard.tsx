@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { PlusCircle, Edit, Trash2, LogOut, Save, X } from 'lucide-react';
+import { PlusCircle, Edit, Trash2, LogOut, Save, X, Settings, Upload, Star } from 'lucide-react';
 import { toast } from 'sonner';
 import Header from '../components/Header';
 
@@ -14,20 +14,25 @@ interface NewsPost {
   date: string;
   image?: string;
   category: string;
+  featured?: boolean;
 }
 
 const AdminDashboard = () => {
   const [posts, setPosts] = useState<NewsPost[]>([]);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [editingPost, setEditingPost] = useState<NewsPost | null>(null);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [formData, setFormData] = useState<Partial<NewsPost>>({
     title: '',
     excerpt: '',
     content: '',
     author: '',
     category: '',
-    image: ''
+    image: '',
+    featured: false
   });
+  const [credentials, setCredentials] = useState({ username: '', password: '' });
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -43,6 +48,14 @@ const AdminDashboard = () => {
     if (savedPosts) {
       setPosts(JSON.parse(savedPosts));
     }
+
+    // Load admin credentials
+    const savedCredentials = localStorage.getItem('admin_credentials');
+    if (savedCredentials) {
+      setCredentials(JSON.parse(savedCredentials));
+    } else {
+      setCredentials({ username: 'admin', password: 'tntv2024' });
+    }
   }, [navigate]);
 
   const handleLogout = () => {
@@ -52,6 +65,19 @@ const AdminDashboard = () => {
     navigate('/admin/login');
   };
 
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImageFile(file);
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const result = e.target?.result as string;
+        setFormData(prev => ({ ...prev, image: result }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const openCreateModal = () => {
     setFormData({
       title: '',
@@ -59,35 +85,54 @@ const AdminDashboard = () => {
       content: '',
       author: '',
       category: '',
-      image: ''
+      image: '',
+      featured: false
     });
+    setImageFile(null);
     setIsCreateModalOpen(true);
   };
 
   const openEditModal = (post: NewsPost) => {
     setFormData(post);
+    setImageFile(null);
     setEditingPost(post);
   };
 
   const closeModals = () => {
     setIsCreateModalOpen(false);
     setEditingPost(null);
+    setIsSettingsOpen(false);
     setFormData({
       title: '',
       excerpt: '',
       content: '',
       author: '',
       category: '',
-      image: ''
+      image: '',
+      featured: false
     });
+    setImageFile(null);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value, type } = e.target;
+    if (type === 'checkbox') {
+      const checked = (e.target as HTMLInputElement).checked;
+      setFormData(prev => ({ ...prev, [name]: checked }));
+    } else {
+      setFormData(prev => ({ ...prev, [name]: value }));
+    }
+  };
+
+  const handleCredentialsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    setCredentials(prev => ({ ...prev, [name]: value }));
+  };
+
+  const saveCredentials = () => {
+    localStorage.setItem('admin_credentials', JSON.stringify(credentials));
+    toast.success('Credentials updated successfully');
+    setIsSettingsOpen(false);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -133,6 +178,16 @@ const AdminDashboard = () => {
     }
   };
 
+  const toggleFeatured = (id: string) => {
+    const updatedPosts = posts.map(post =>
+      post.id === id ? { ...post, featured: !post.featured } : post
+    );
+    setPosts(updatedPosts);
+    localStorage.setItem('news_posts', JSON.stringify(updatedPosts));
+    const post = posts.find(p => p.id === id);
+    toast.success(`Post ${post?.featured ? 'removed from' : 'marked as'} featured`);
+  };
+
   const categories = ['Technology', 'Business', 'Politics', 'Sports', 'Entertainment', 'Health', 'Environment', 'Science'];
 
   return (
@@ -155,6 +210,13 @@ const AdminDashboard = () => {
               Create Post
             </button>
             <button
+              onClick={() => setIsSettingsOpen(true)}
+              className="inline-flex items-center gap-2 bg-gray-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-gray-700 transition-colors"
+            >
+              <Settings className="h-5 w-5" />
+              Settings
+            </button>
+            <button
               onClick={handleLogout}
               className="inline-flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-red-700 transition-colors"
             >
@@ -174,6 +236,7 @@ const AdminDashboard = () => {
                   <th className="text-left py-4 px-6 font-medium text-gray-900">Category</th>
                   <th className="text-left py-4 px-6 font-medium text-gray-900">Author</th>
                   <th className="text-left py-4 px-6 font-medium text-gray-900">Date</th>
+                  <th className="text-left py-4 px-6 font-medium text-gray-900">Featured</th>
                   <th className="text-right py-4 px-6 font-medium text-gray-900">Actions</th>
                 </tr>
               </thead>
@@ -194,6 +257,18 @@ const AdminDashboard = () => {
                     <td className="py-4 px-6 text-gray-900">{post.author}</td>
                     <td className="py-4 px-6 text-gray-600">
                       {new Date(post.date).toLocaleDateString()}
+                    </td>
+                    <td className="py-4 px-6">
+                      <button
+                        onClick={() => toggleFeatured(post.id)}
+                        className={`p-2 rounded-lg transition-colors ${
+                          post.featured 
+                            ? 'text-yellow-600 hover:bg-yellow-50' 
+                            : 'text-gray-400 hover:bg-gray-50'
+                        }`}
+                      >
+                        <Star className={`h-4 w-4 ${post.featured ? 'fill-current' : ''}`} />
+                      </button>
                     </td>
                     <td className="py-4 px-6 text-right">
                       <div className="flex justify-end gap-2">
@@ -232,6 +307,60 @@ const AdminDashboard = () => {
         </div>
       </div>
 
+      {/* Settings Modal */}
+      {isSettingsOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-md">
+            <div className="p-6">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-gray-900">Admin Settings</h2>
+                <button onClick={closeModals} className="p-2 text-gray-600 hover:text-gray-800">
+                  <X className="h-6 w-6" />
+                </button>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Username</label>
+                  <input
+                    type="text"
+                    name="username"
+                    value={credentials.username}
+                    onChange={handleCredentialsChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                  <input
+                    type="password"
+                    name="password"
+                    value={credentials.password}
+                    onChange={handleCredentialsChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  />
+                </div>
+              </div>
+
+              <div className="flex gap-4 pt-6">
+                <button
+                  onClick={saveCredentials}
+                  className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                >
+                  Save Changes
+                </button>
+                <button
+                  onClick={closeModals}
+                  className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Create/Edit Modal */}
       {(isCreateModalOpen || editingPost) && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -241,10 +370,7 @@ const AdminDashboard = () => {
                 <h2 className="text-2xl font-bold text-gray-900">
                   {editingPost ? 'Edit Post' : 'Create New Post'}
                 </h2>
-                <button
-                  onClick={closeModals}
-                  className="p-2 text-gray-600 hover:text-gray-800 transition-colors"
-                >
+                <button onClick={closeModals} className="p-2 text-gray-600 hover:text-gray-800 transition-colors">
                   <X className="h-6 w-6" />
                 </button>
               </div>
@@ -302,20 +428,50 @@ const AdminDashboard = () => {
                     />
                   </div>
 
-                  <div>
-                    <label htmlFor="image" className="block text-sm font-medium text-gray-700 mb-2">
-                      Image URL
-                    </label>
+                  <div className="flex items-center">
                     <input
-                      type="url"
-                      id="image"
-                      name="image"
-                      value={formData.image || ''}
+                      type="checkbox"
+                      id="featured"
+                      name="featured"
+                      checked={formData.featured || false}
                       onChange={handleInputChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      placeholder="https://example.com/image.jpg"
+                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                     />
+                    <label htmlFor="featured" className="ml-2 text-sm font-medium text-gray-700">
+                      Mark as Featured
+                    </label>
                   </div>
+                </div>
+
+                <div>
+                  <label htmlFor="image" className="block text-sm font-medium text-gray-700 mb-2">
+                    Upload Image
+                  </label>
+                  <div className="flex items-center gap-4">
+                    <input
+                      type="file"
+                      id="image"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      className="hidden"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => document.getElementById('image')?.click()}
+                      className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                    >
+                      <Upload className="h-4 w-4" />
+                      Choose Image
+                    </button>
+                    {imageFile && <span className="text-sm text-gray-600">{imageFile.name}</span>}
+                  </div>
+                  {formData.image && (
+                    <img 
+                      src={formData.image} 
+                      alt="Preview" 
+                      className="mt-2 h-20 w-20 object-cover rounded-lg"
+                    />
+                  )}
                 </div>
 
                 <div>

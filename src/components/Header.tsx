@@ -1,13 +1,23 @@
 
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Menu, X, Search, Bell } from 'lucide-react';
+import { Menu, X, Search, Bell, Instagram, Facebook, Phone, MessageCircle } from 'lucide-react';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showSearch, setShowSearch] = useState(false);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
+  };
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      // Trigger search functionality
+      window.dispatchEvent(new CustomEvent('searchNews', { detail: searchQuery }));
+    }
   };
 
   return (
@@ -28,37 +38,87 @@ const Header = () => {
             <Link to="/" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">
               Home
             </Link>
-            <a href="#" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">
+            <Link to="/category/politics" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">
               Politics
-            </a>
-            <a href="#" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">
+            </Link>
+            <Link to="/category/business" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">
               Business
-            </a>
-            <a href="#" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">
+            </Link>
+            <Link to="/category/technology" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">
               Technology
-            </a>
-            <a href="#" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">
+            </Link>
+            <Link to="/category/sports" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">
               Sports
-            </a>
-            <a href="#" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">
+            </Link>
+            <Link to="/category/entertainment" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">
               Entertainment
-            </a>
+            </Link>
           </nav>
 
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center space-x-4">
-            <button className="p-2 text-gray-600 hover:text-blue-600 transition-colors">
-              <Search className="h-5 w-5" />
-            </button>
-            <button className="p-2 text-gray-600 hover:text-blue-600 transition-colors">
-              <Bell className="h-5 w-5" />
-            </button>
-            <Link 
-              to="/admin/login" 
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors"
-            >
-              Admin
-            </Link>
+            {showSearch ? (
+              <form onSubmit={handleSearch} className="flex items-center">
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search news..."
+                  className="px-3 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                />
+                <button type="submit" className="ml-2 p-2 text-blue-600 hover:text-blue-800">
+                  <Search className="h-5 w-5" />
+                </button>
+                <button 
+                  type="button" 
+                  onClick={() => setShowSearch(false)}
+                  className="ml-1 p-2 text-gray-600 hover:text-blue-600"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </form>
+            ) : (
+              <button 
+                onClick={() => setShowSearch(true)}
+                className="p-2 text-gray-600 hover:text-blue-600 transition-colors"
+              >
+                <Search className="h-5 w-5" />
+              </button>
+            )}
+            
+            {/* Contact Links */}
+            <div className="flex items-center space-x-2">
+              <a 
+                href="https://www.instagram.com/tntvnetwork/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="p-2 text-gray-600 hover:text-pink-600 transition-colors"
+              >
+                <Instagram className="h-5 w-5" />
+              </a>
+              <a 
+                href="https://www.facebook.com/TnTvNetwork/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="p-2 text-gray-600 hover:text-blue-600 transition-colors"
+              >
+                <Facebook className="h-5 w-5" />
+              </a>
+              <a 
+                href="https://wa.me/2347089513080" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="p-2 text-gray-600 hover:text-green-600 transition-colors"
+              >
+                <MessageCircle className="h-5 w-5" />
+              </a>
+              <a 
+                href="tel:+2347089513080" 
+                className="p-2 text-gray-600 hover:text-blue-600 transition-colors"
+              >
+                <Phone className="h-5 w-5" />
+              </a>
+            </div>
           </div>
 
           {/* Mobile Menu Button */}
@@ -77,31 +137,68 @@ const Header = () => {
               <Link to="/" className="px-4 py-2 text-gray-700 hover:text-blue-600 font-medium transition-colors">
                 Home
               </Link>
-              <a href="#" className="px-4 py-2 text-gray-700 hover:text-blue-600 font-medium transition-colors">
+              <Link to="/category/politics" className="px-4 py-2 text-gray-700 hover:text-blue-600 font-medium transition-colors">
                 Politics
-              </a>
-              <a href="#" className="px-4 py-2 text-gray-700 hover:text-blue-600 font-medium transition-colors">
+              </Link>
+              <Link to="/category/business" className="px-4 py-2 text-gray-700 hover:text-blue-600 font-medium transition-colors">
                 Business
-              </a>
-              <a href="#" className="px-4 py-2 text-gray-700 hover:text-blue-600 font-medium transition-colors">
+              </Link>
+              <Link to="/category/technology" className="px-4 py-2 text-gray-700 hover:text-blue-600 font-medium transition-colors">
                 Technology
-              </a>
-              <a href="#" className="px-4 py-2 text-gray-700 hover:text-blue-600 font-medium transition-colors">
+              </Link>
+              <Link to="/category/sports" className="px-4 py-2 text-gray-700 hover:text-blue-600 font-medium transition-colors">
                 Sports
-              </a>
-              <a href="#" className="px-4 py-2 text-gray-700 hover:text-blue-600 font-medium transition-colors">
+              </Link>
+              <Link to="/category/entertainment" className="px-4 py-2 text-gray-700 hover:text-blue-600 font-medium transition-colors">
                 Entertainment
-              </a>
+              </Link>
+              
+              {/* Mobile Search */}
+              <div className="px-4 py-2">
+                <form onSubmit={handleSearch} className="flex items-center">
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Search news..."
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  />
+                  <button type="submit" className="ml-2 p-2 text-blue-600 hover:text-blue-800">
+                    <Search className="h-5 w-5" />
+                  </button>
+                </form>
+              </div>
+
+              {/* Mobile Contact Links */}
               <div className="px-4 py-2 flex items-center space-x-4">
-                <button className="p-2 text-gray-600 hover:text-blue-600 transition-colors">
-                  <Search className="h-5 w-5" />
-                </button>
-                <Link 
-                  to="/admin/login" 
-                  className="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                <a 
+                  href="https://www.instagram.com/tntvnetwork/" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="p-2 text-gray-600 hover:text-pink-600 transition-colors"
                 >
-                  Admin
-                </Link>
+                  <Instagram className="h-5 w-5" />
+                </a>
+                <a 
+                  href="https://www.facebook.com/TnTvNetwork/" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="p-2 text-gray-600 hover:text-blue-600 transition-colors"
+                </a>
+                <a 
+                  href="https://wa.me/2347089513080" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="p-2 text-gray-600 hover:text-green-600 transition-colors"
+                >
+                  <MessageCircle className="h-5 w-5" />
+                </a>
+                <a 
+                  href="tel:+2347089513080" 
+                  className="p-2 text-gray-600 hover:text-blue-600 transition-colors"
+                >
+                  <Phone className="h-5 w-5" />
+                </a>
               </div>
             </nav>
           </div>

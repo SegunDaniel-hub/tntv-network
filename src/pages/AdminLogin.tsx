@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Lock, User, AlertCircle, ArrowLeft } from 'lucide-react';
+import { Lock, User, ArrowLeft } from 'lucide-react';
 import { toast } from 'sonner';
 
 const AdminLogin = () => {
@@ -27,8 +27,13 @@ const AdminLogin = () => {
     // Simulate API call delay
     await new Promise(resolve => setTimeout(resolve, 1000));
 
-    // Simple authentication (in production, this would be server-side)
-    if (credentials.username === 'admin' && credentials.password === 'tntv2024') {
+    // Get stored admin credentials or use defaults
+    const storedCredentials = localStorage.getItem('admin_credentials');
+    const adminCreds = storedCredentials ? 
+      JSON.parse(storedCredentials) : 
+      { username: 'admin', password: 'tntv2024' };
+
+    if (credentials.username === adminCreds.username && credentials.password === adminCreds.password) {
       localStorage.setItem('admin_logged_in', 'true');
       localStorage.setItem('admin_login_time', new Date().toISOString());
       toast.success('Login successful! Welcome to the admin dashboard.');
@@ -61,20 +66,6 @@ const AdminLogin = () => {
             </div>
             <h1 className="text-2xl font-bold text-gray-900 mb-2">Admin Access</h1>
             <p className="text-gray-600">Sign in to manage TNTV Network content</p>
-          </div>
-
-          {/* Demo Credentials Notice */}
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-            <div className="flex items-start gap-3">
-              <AlertCircle className="h-5 w-5 text-blue-600 mt-0.5" />
-              <div>
-                <h3 className="font-medium text-blue-900 mb-1">Demo Credentials</h3>
-                <p className="text-sm text-blue-700">
-                  Username: <code className="bg-blue-100 px-1 rounded">admin</code><br />
-                  Password: <code className="bg-blue-100 px-1 rounded">tntv2024</code>
-                </p>
-              </div>
-            </div>
           </div>
 
           {/* Login Form */}
