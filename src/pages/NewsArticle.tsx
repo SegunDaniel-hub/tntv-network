@@ -21,6 +21,51 @@ const NewsArticle = () => {
   const [post, setPost] = useState<NewsPost | null>(null);
   const [relatedPosts, setRelatedPosts] = useState<NewsPost[]>([]);
 
+  // Update meta tags for social sharing
+  const updateMetaTags = (post: NewsPost) => {
+    // Update title
+    document.title = `${post.title} - TNTV Network`;
+    
+    // Update or create Open Graph meta tags
+    const updateMetaTag = (property: string, content: string) => {
+      let metaTag = document.querySelector(`meta[property="${property}"]`);
+      if (!metaTag) {
+        metaTag = document.createElement('meta');
+        metaTag.setAttribute('property', property);
+        document.head.appendChild(metaTag);
+      }
+      metaTag.setAttribute('content', content);
+    };
+
+    // Update or create Twitter meta tags
+    const updateTwitterTag = (name: string, content: string) => {
+      let metaTag = document.querySelector(`meta[name="${name}"]`);
+      if (!metaTag) {
+        metaTag = document.createElement('meta');
+        metaTag.setAttribute('name', name);
+        document.head.appendChild(metaTag);
+      }
+      metaTag.setAttribute('content', content);
+    };
+
+    // Set Open Graph tags
+    updateMetaTag('og:title', post.title);
+    updateMetaTag('og:description', post.excerpt);
+    updateMetaTag('og:type', 'article');
+    updateMetaTag('og:url', window.location.href);
+    
+    if (post.image) {
+      updateMetaTag('og:image', post.image);
+    }
+
+    // Set Twitter tags
+    updateTwitterTag('twitter:title', post.title);
+    updateTwitterTag('twitter:description', post.excerpt);
+    if (post.image) {
+      updateTwitterTag('twitter:image', post.image);
+    }
+  };
+
   useEffect(() => {
     const savedPosts = localStorage.getItem('news_posts');
     if (savedPosts && id) {
@@ -29,6 +74,9 @@ const NewsArticle = () => {
       setPost(foundPost || null);
       
       if (foundPost) {
+        // Update meta tags for social sharing
+        updateMetaTags(foundPost);
+        
         const related = posts
           .filter(p => p.id !== id && p.category === foundPost.category)
           .slice(0, 3);
@@ -36,6 +84,13 @@ const NewsArticle = () => {
       }
     }
   }, [id]);
+
+  // Clean up meta tags when component unmounts
+  useEffect(() => {
+    return () => {
+      document.title = 'TNTV Network';
+    };
+  }, []);
 
   const handleShare = (platform: string) => {
     if (!post) return;
