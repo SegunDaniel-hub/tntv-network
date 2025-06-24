@@ -82,17 +82,17 @@ const Index = () => {
   const featuredPosts = posts.filter(post => post.featured);
   const recentPosts = isSearching ? filteredPosts : posts.slice(0, 6);
   const categories = ['Technology', 'Business', 'Politics', 'Sports', 'Entertainment', 'Environment'];
-  return <div className="min-h-screen bg-gray-50">
+  return (
+    <div className="min-h-screen bg-gray-50">
       <Header />
       
-      {!isSearching && <>
+      {!isSearching && (
+        <>
           {/* Hero Section with Slider */}
           <section className="bg-gradient-to-r from-blue-900 to-blue-700 text-white py-8">
             <div className="container mx-auto px-4">
               <div className="text-center max-w-4xl mx-auto mb-8">
                 <h1 className="text-4xl md:text-5xl font-bold mb-4">News You Can Trust</h1>
-                
-                
               </div>
               
               {/* News Slider in Hero */}
@@ -102,37 +102,75 @@ const Index = () => {
             </div>
           </section>
 
+          {/* Featured Articles Section */}
+          {featuredPosts.length > 0 && (
+            <section className="py-12 bg-white">
+              <div className="container mx-auto px-4">
+                <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Featured Stories</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                  {featuredPosts.slice(0, 3).map(post => (
+                    <NewsCard key={post.id} post={post} />
+                  ))}
+                </div>
+                {featuredPosts.length > 3 && (
+                  <div className="text-center mt-8">
+                    <Link 
+                      to="/category/featured" 
+                      className="inline-flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                    >
+                      View All Featured Stories
+                      <ArrowRight className="h-4 w-4" />
+                    </Link>
+                  </div>
+                )}
+              </div>
+            </section>
+          )}
+
           {/* Categories Section */}
-          <section className="py-12 bg-white">
+          <section className="py-12 bg-gray-50">
             <div className="container mx-auto px-4">
               <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Browse by Category</h2>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-                {categories.map(category => <Link key={category} to={`/category/${category.toLowerCase()}`} className="bg-blue-50 hover:bg-blue-100 text-blue-800 text-center py-4 px-6 rounded-lg font-medium transition-colors">
+                {categories.map(category => (
+                  <Link
+                    key={category}
+                    to={`/category/${category.toLowerCase()}`}
+                    className="bg-blue-50 hover:bg-blue-100 text-blue-800 text-center py-4 px-6 rounded-lg font-medium transition-colors"
+                  >
                     {category}
-                  </Link>)}
+                  </Link>
+                ))}
               </div>
             </div>
           </section>
-        </>}
+        </>
+      )}
 
       {/* Recent News / Search Results */}
-      <section className={`py-12 ${isSearching ? 'pt-8' : ''} ${!isSearching ? 'bg-gray-50' : 'bg-white'}`}>
+      <section className={`py-12 ${isSearching ? 'pt-8' : ''} ${!isSearching ? 'bg-white' : 'bg-white'}`}>
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">
             {isSearching ? `Search Results for "${searchQuery}"` : 'Latest News'}
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {recentPosts.map(post => <NewsCard key={post.id} post={post} />)}
+            {recentPosts.map(post => (
+              <NewsCard key={post.id} post={post} />
+            ))}
           </div>
-          {recentPosts.length === 0 && <div className="text-center py-12">
+          {recentPosts.length === 0 && (
+            <div className="text-center py-12">
               <p className="text-gray-600 text-lg">
                 {isSearching ? 'No articles found for your search.' : 'No news articles available yet.'}
               </p>
-              {!isSearching && <Link to="/admin/login" className="inline-flex items-center gap-2 mt-4 text-blue-600 hover:text-blue-800 font-medium">
+              {!isSearching && (
+                <Link to="/admin/login" className="inline-flex items-center gap-2 mt-4 text-blue-600 hover:text-blue-800 font-medium">
                   Access Admin Panel to Add News
                   <ArrowRight className="h-4 w-4" />
-                </Link>}
-            </div>}
+                </Link>
+              )}
+            </div>
+          )}
         </div>
       </section>
 
@@ -184,6 +222,8 @@ const Index = () => {
           </div>
         </div>
       </footer>
-    </div>;
+    </div>
+  );
 };
+
 export default Index;
