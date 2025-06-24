@@ -28,7 +28,7 @@ const Index = () => {
       setPosts(parsedPosts);
       setFilteredPosts(parsedPosts);
     } else {
-      // Initialize with sample data
+      // Initialize with sample data - now with more featured posts
       const samplePosts: NewsPost[] = [{
         id: '1',
         title: 'TNTV Network Launches New Digital Platform',
@@ -47,7 +47,7 @@ const Index = () => {
         author: 'Michael Chen',
         date: '2024-06-20',
         category: 'Environment',
-        featured: false
+        featured: true
       }, {
         id: '3',
         title: 'Tech Innovation Drives Economic Growth',
@@ -56,6 +56,33 @@ const Index = () => {
         author: 'Emily Rodriguez',
         date: '2024-06-19',
         category: 'Business',
+        featured: true
+      }, {
+        id: '4',
+        title: 'Breaking: Major Scientific Discovery Announced',
+        excerpt: 'Researchers make groundbreaking discovery that could revolutionize modern medicine.',
+        content: 'A team of international scientists has announced a major breakthrough...',
+        author: 'Dr. James Wilson',
+        date: '2024-06-18',
+        category: 'Science',
+        featured: true
+      }, {
+        id: '5',
+        title: 'Sports Championship Finals Draw Record Audience',
+        excerpt: 'The biggest sporting event of the year attracts millions of viewers worldwide.',
+        content: 'Last night\'s championship finals broke all previous viewership records...',
+        author: 'Alex Thompson',
+        date: '2024-06-17',
+        category: 'Sports',
+        featured: false
+      }, {
+        id: '6',
+        title: 'Local Community Celebrates Cultural Festival',
+        excerpt: 'Annual cultural festival brings together diverse communities in celebration.',
+        content: 'The annual cultural festival showcased the rich diversity of our community...',
+        author: 'Maria Garcia',
+        date: '2024-06-16',
+        category: 'Culture',
         featured: false
       }];
       localStorage.setItem('news_posts', JSON.stringify(samplePosts));

@@ -33,14 +33,24 @@ const CategoryPage = () => {
 
   useEffect(() => {
     if (category && posts.length > 0) {
-      const categoryPosts = posts.filter(
-        post => post.category.toLowerCase() === category.toLowerCase()
-      );
+      let categoryPosts: NewsPost[];
+      
+      // Handle special case for "featured" category
+      if (category.toLowerCase() === 'featured') {
+        categoryPosts = posts.filter(post => post.featured === true);
+      } else {
+        categoryPosts = posts.filter(
+          post => post.category.toLowerCase() === category.toLowerCase()
+        );
+      }
+      
       setFilteredPosts(categoryPosts);
     }
   }, [category, posts]);
 
-  const categoryTitle = category ? category.charAt(0).toUpperCase() + category.slice(1) : '';
+  const categoryTitle = category ? 
+    (category.toLowerCase() === 'featured' ? 'Featured' : category.charAt(0).toUpperCase() + category.slice(1)) 
+    : '';
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -59,10 +69,13 @@ const CategoryPage = () => {
         {/* Category Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            {categoryTitle} News
+            {categoryTitle} {category?.toLowerCase() === 'featured' ? 'Stories' : 'News'}
           </h1>
           <p className="text-gray-600">
-            Latest updates and stories from {categoryTitle.toLowerCase()}
+            {category?.toLowerCase() === 'featured' 
+              ? 'Our most important and highlighted stories'
+              : `Latest updates and stories from ${categoryTitle.toLowerCase()}`
+            }
           </p>
         </div>
 
@@ -76,7 +89,10 @@ const CategoryPage = () => {
         ) : (
           <div className="text-center py-12">
             <p className="text-gray-600 text-lg">
-              No news articles found in {categoryTitle.toLowerCase()} category.
+              {category?.toLowerCase() === 'featured' 
+                ? 'No featured stories available at the moment.'
+                : `No news articles found in ${categoryTitle.toLowerCase()} category.`
+              }
             </p>
             <Link 
               to="/" 
