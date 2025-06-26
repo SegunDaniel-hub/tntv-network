@@ -31,7 +31,7 @@ const NewsCard = ({ post }: NewsCardProps) => {
       ) : (
         <div className="h-48 bg-gradient-to-r from-blue-100 to-blue-200 flex items-center justify-center">
           <div className="text-blue-400 text-6xl font-bold opacity-20">
-          TNTV  NEWS
+          TNTV NEWS
           </div>
         </div>
       )}
