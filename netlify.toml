@@ -2,3 +2,10 @@
   from = "/*"
   to = "/index.html"
   status = 200
+
+[[plugins]]
+  package = "netlify-plugin-prerender-spa"
+
+  [plugins.inputs]
+  # list every route pattern you want prerendered
+  include = [ "/", "/article/*" ]
