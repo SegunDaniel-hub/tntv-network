@@ -3,9 +3,16 @@
   to = "/index.html"
   status = 200
 
+[build]
+  command = "npm run build"
+  publish = "dist"
+
 [[plugins]]
   package = "netlify-plugin-prerender-spa"
 
   [plugins.inputs]
   # list every route pattern you want prerendered
   include = [ "/", "/article/*" ]
+  # (optional) fallback is the 404 page if prerender fails
+  fallback = "/404.html"
+
