@@ -13,6 +13,4 @@
   [plugins.inputs]
   # list every route pattern you want prerendered
   include = [ "/", "/article/*" ]
-  # (optional) fallback is the 404 page if prerender fails
-  fallback = "/404.html"
 
