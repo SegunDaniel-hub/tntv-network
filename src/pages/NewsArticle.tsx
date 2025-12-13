@@ -1,32 +1,20 @@
-
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Calendar, User, ArrowLeft, Share2, Facebook, Twitter, Copy } from 'lucide-react';
+import { Calendar, User, ArrowLeft, Facebook, Twitter, Copy } from 'lucide-react';
 import Header from '../components/Header';
-
-interface NewsPost {
-  id: string;
-  title: string;
-  excerpt: string;
-  content: string;
-  author: string;
-  date: string;
-  image?: string;
-  category: string;
-  featured?: boolean;
-}
+import { useArticles, NewsArticle as NewsArticleType } from '@/hooks/useArticles';
+import { toast } from 'sonner';
 
 const NewsArticle = () => {
   const { id } = useParams<{ id: string }>();
-  const [post, setPost] = useState<NewsPost | null>(null);
-  const [relatedPosts, setRelatedPosts] = useState<NewsPost[]>([]);
+  const { getArticleById, articles } = useArticles();
+  const [post, setPost] = useState<NewsArticleType | null>(null);
+  const [relatedPosts, setRelatedPosts] = useState<NewsArticleType[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Update meta tags for social sharing
-  const updateMetaTags = (post: NewsPost) => {
-    // Update title
+  const updateMetaTags = (post: NewsArticleType) => {
     document.title = `${post.title} - TNTV Network`;
     
-    // Update or create Open Graph meta tags
     const updateMetaTag = (property: string, content: string) => {
       let metaTag = document.querySelector(`meta[property="${property}"]`);
       if (!metaTag) {
@@ -37,7 +25,6 @@ const NewsArticle = () => {
       metaTag.setAttribute('content', content);
     };
 
-    // Update or create Twitter meta tags
     const updateTwitterTag = (name: string, content: string) => {
       let metaTag = document.querySelector(`meta[name="${name}"]`);
       if (!metaTag) {
@@ -48,9 +35,8 @@ const NewsArticle = () => {
       metaTag.setAttribute('content', content);
     };
 
-    // Set Open Graph tags
     updateMetaTag('og:title', post.title);
-    updateMetaTag('og:description', post.excerpt);
+    updateMetaTag('og:description', post.excerpt || '');
     updateMetaTag('og:type', 'article');
     updateMetaTag('og:url', window.location.href);
     
@@ -58,34 +44,35 @@ const NewsArticle = () => {
       updateMetaTag('og:image', post.image);
     }
 
-    // Set Twitter tags
     updateTwitterTag('twitter:title', post.title);
-    updateTwitterTag('twitter:description', post.excerpt);
+    updateTwitterTag('twitter:description', post.excerpt || '');
     if (post.image) {
       updateTwitterTag('twitter:image', post.image);
     }
   };
 
   useEffect(() => {
-    const savedPosts = localStorage.getItem('news_posts');
-    if (savedPosts && id) {
-      const posts: NewsPost[] = JSON.parse(savedPosts);
-      const foundPost = posts.find(p => p.id === id);
-      setPost(foundPost || null);
+    const fetchArticle = async () => {
+      if (!id) return;
+      
+      setIsLoading(true);
+      const foundPost = await getArticleById(id);
+      setPost(foundPost);
       
       if (foundPost) {
-        // Update meta tags for social sharing
         updateMetaTags(foundPost);
         
-        const related = posts
-          .filter(p => p.id !== id && p.category === foundPost.category)
+        const related = articles
+          .filter(p => p.id !== id && p.category === foundPost.category && p.published)
           .slice(0, 3);
         setRelatedPosts(related);
       }
-    }
-  }, [id]);
+      setIsLoading(false);
+    };
 
-  // Clean up meta tags when component unmounts
+    fetchArticle();
+  }, [id, articles]);
+
   useEffect(() => {
     return () => {
       document.title = 'TNTV Network';
@@ -107,9 +94,22 @@ const NewsArticle = () => {
         break;
       case 'copy':
         navigator.clipboard.writeText(url);
+        toast.success('Link copied to clipboard!');
         break;
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Header />
+        <div className="container mx-auto px-4 py-12 text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading article...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!post) {
     return (
@@ -131,7 +131,6 @@ const NewsArticle = () => {
       
       <article className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
-          {/* Back button */}
           <Link 
             to="/" 
             className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium mb-6 transition-colors"
@@ -140,7 +139,6 @@ const NewsArticle = () => {
             Back to Home
           </Link>
 
-          {/* Article header */}
           <div className="bg-white rounded-lg shadow-md overflow-hidden mb-8">
             {post.image && (
               <div className="h-64 md:h-96">
@@ -159,7 +157,7 @@ const NewsArticle = () => {
                 </span>
                 <div className="flex items-center gap-1">
                   <Calendar className="h-4 w-4" />
-                  <span>{new Date(post.date).toLocaleDateString()}</span>
+                  <span>{new Date(post.created_at).toLocaleDateString()}</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <User className="h-4 w-4" />
@@ -171,11 +169,12 @@ const NewsArticle = () => {
                 {post.title}
               </h1>
               
-              <p className="text-lg text-gray-700 leading-relaxed mb-6">
-                {post.excerpt}
-              </p>
+              {post.excerpt && (
+                <p className="text-lg text-gray-700 leading-relaxed mb-6">
+                  {post.excerpt}
+                </p>
+              )}
               
-              {/* Share buttons */}
               <div className="flex items-center gap-3 pt-4 border-t border-gray-200">
                 <span className="text-sm text-gray-600 font-medium">Share:</span>
                 <button
@@ -200,7 +199,6 @@ const NewsArticle = () => {
             </div>
           </div>
 
-          {/* Article content */}
           <div className="bg-white rounded-lg shadow-md p-6 md:p-8 mb-8">
             <div className="prose prose-lg max-w-none">
               <p className="text-gray-700 leading-relaxed whitespace-pre-line">
@@ -209,7 +207,6 @@ const NewsArticle = () => {
             </div>
           </div>
 
-          {/* Related articles */}
           {relatedPosts.length > 0 && (
             <div className="bg-white rounded-lg shadow-md p-6 md:p-8">
               <h2 className="text-2xl font-bold text-gray-900 mb-6">Related Articles</h2>

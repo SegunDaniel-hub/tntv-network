@@ -1,15 +1,14 @@
-
 import { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Calendar, User } from 'lucide-react';
 
 interface NewsPost {
   id: string;
   title: string;
-  excerpt: string;
+  excerpt: string | null;
   content: string;
   author: string;
-  date: string;
-  image?: string;
+  created_at: string;
+  image?: string | null;
   category: string;
   featured?: boolean;
 }
@@ -75,10 +74,8 @@ const NewsSlider = ({ posts }: NewsSliderProps) => {
               </div>
             )}
             
-            {/* Overlay */}
             <div className="absolute inset-0 bg-black bg-opacity-40"></div>
             
-            {/* Content */}
             <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
               <div className="flex items-center gap-4 text-sm mb-3">
                 <span className="bg-blue-600 px-3 py-1 rounded-full font-medium">
@@ -86,7 +83,7 @@ const NewsSlider = ({ posts }: NewsSliderProps) => {
                 </span>
                 <div className="flex items-center gap-1">
                   <Calendar className="h-4 w-4" />
-                  <span>{new Date(post.date).toLocaleDateString()}</span>
+                  <span>{new Date(post.created_at).toLocaleDateString()}</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <User className="h-4 w-4" />
@@ -104,7 +101,6 @@ const NewsSlider = ({ posts }: NewsSliderProps) => {
         </div>
       ))}
 
-      {/* Navigation Buttons */}
       {sliderPosts.length > 1 && (
         <>
           <button
@@ -122,7 +118,6 @@ const NewsSlider = ({ posts }: NewsSliderProps) => {
         </>
       )}
 
-      {/* Dots Indicator */}
       {sliderPosts.length > 1 && (
         <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
           {sliderPosts.map((_, index) => (

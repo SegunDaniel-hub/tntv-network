@@ -1,114 +1,57 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Tv, Globe, Users, Instagram, Facebook, MessageCircle, Phone } from 'lucide-react';
+import { ArrowRight, Phone, Instagram, Facebook, MessageCircle } from 'lucide-react';
 import Header from '../components/Header';
 import NewsCard from '../components/NewsCard';
 import NewsSlider from '../components/NewsSlider';
-interface NewsPost {
-  id: string;
-  title: string;
-  excerpt: string;
-  content: string;
-  author: string;
-  date: string;
-  image?: string;
-  category: string;
-  featured?: boolean;
-}
+import { useArticles, NewsArticle } from '@/hooks/useArticles';
+
 const Index = () => {
-  const [posts, setPosts] = useState<NewsPost[]>([]);
-  const [filteredPosts, setFilteredPosts] = useState<NewsPost[]>([]);
+  const { articles, isLoading, searchArticles } = useArticles();
+  const [filteredPosts, setFilteredPosts] = useState<NewsArticle[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearching, setIsSearching] = useState(false);
+
   useEffect(() => {
-    // Load posts from localStorage
-    const savedPosts = localStorage.getItem('news_posts');
-    if (savedPosts) {
-      const parsedPosts = JSON.parse(savedPosts);
-      setPosts(parsedPosts);
-      setFilteredPosts(parsedPosts);
-    } else {
-      // Initialize with sample data - now with more featured posts
-      const samplePosts: NewsPost[] = [{
-        id: '1',
-        title: 'TNTV Network Launches New Digital Platform',
-        excerpt: 'Breaking new ground in digital journalism with cutting-edge technology and comprehensive coverage.',
-        content: 'TNTV Network announces the launch of its revolutionary digital platform...',
-        author: 'Sarah Johnson',
-        date: '2024-06-21',
-        category: 'Technology',
-        image: '/placeholder.svg',
-        featured: true
-      }, {
-        id: '2',
-        title: 'Global Climate Summit Reaches Historic Agreement',
-        excerpt: 'World leaders unite on ambitious climate action plan with unprecedented cooperation.',
-        content: 'In a landmark decision that could reshape global environmental policy...',
-        author: 'Michael Chen',
-        date: '2024-06-20',
-        category: 'Environment',
-        featured: true
-      }, {
-        id: '3',
-        title: 'Tech Innovation Drives Economic Growth',
-        excerpt: 'New study reveals technology sector contributing significantly to economic recovery.',
-        content: 'Recent economic data shows remarkable growth in the technology sector...',
-        author: 'Emily Rodriguez',
-        date: '2024-06-19',
-        category: 'Business',
-        featured: true
-      }, {
-        id: '4',
-        title: 'Breaking: Major Scientific Discovery Announced',
-        excerpt: 'Researchers make groundbreaking discovery that could revolutionize modern medicine.',
-        content: 'A team of international scientists has announced a major breakthrough...',
-        author: 'Dr. James Wilson',
-        date: '2024-06-18',
-        category: 'Science',
-        featured: true
-      }, {
-        id: '5',
-        title: 'Sports Championship Finals Draw Record Audience',
-        excerpt: 'The biggest sporting event of the year attracts millions of viewers worldwide.',
-        content: 'Last night\'s championship finals broke all previous viewership records...',
-        author: 'Alex Thompson',
-        date: '2024-06-17',
-        category: 'Sports',
-        featured: false
-      }, {
-        id: '6',
-        title: 'Local Community Celebrates Cultural Festival',
-        excerpt: 'Annual cultural festival brings together diverse communities in celebration.',
-        content: 'The annual cultural festival showcased the rich diversity of our community...',
-        author: 'Maria Garcia',
-        date: '2024-06-16',
-        category: 'Culture',
-        featured: false
-      }];
-      localStorage.setItem('news_posts', JSON.stringify(samplePosts));
-      setPosts(samplePosts);
-      setFilteredPosts(samplePosts);
-    }
-  }, []);
+    setFilteredPosts(articles.filter(a => a.published));
+  }, [articles]);
+
   useEffect(() => {
-    const handleSearch = (event: CustomEvent) => {
+    const handleSearch = async (event: CustomEvent) => {
       const query = event.detail;
       setSearchQuery(query);
       setIsSearching(true);
+      
       if (query.trim() === '') {
-        setFilteredPosts(posts);
+        setFilteredPosts(articles.filter(a => a.published));
         setIsSearching(false);
       } else {
-        const filtered = posts.filter(post => post.title.toLowerCase().includes(query.toLowerCase()) || post.excerpt.toLowerCase().includes(query.toLowerCase()) || post.content.toLowerCase().includes(query.toLowerCase()) || post.category.toLowerCase().includes(query.toLowerCase()) || post.author.toLowerCase().includes(query.toLowerCase()));
-        setFilteredPosts(filtered);
+        const results = await searchArticles(query);
+        setFilteredPosts(results);
       }
     };
+    
     window.addEventListener('searchNews', handleSearch as EventListener);
     return () => window.removeEventListener('searchNews', handleSearch as EventListener);
-  }, [posts]);
-  const featuredPosts = posts.filter(post => post.featured);
-  const recentPosts = isSearching ? filteredPosts : posts.slice(0, 6);
+  }, [articles, searchArticles]);
+
+  const publishedArticles = articles.filter(a => a.published);
+  const featuredPosts = publishedArticles.filter(post => post.featured);
+  const recentPosts = isSearching ? filteredPosts : publishedArticles.slice(0, 6);
   const categories = ['Technology', 'Business', 'Politics', 'Sports', 'Entertainment', 'Environment'];
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Header />
+        <div className="container mx-auto px-4 py-12 text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading articles...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
@@ -124,7 +67,7 @@ const Index = () => {
               
               {/* News Slider in Hero */}
               <div className="max-w-6xl mx-auto">
-                <NewsSlider posts={featuredPosts.length > 0 ? featuredPosts : posts} />
+                <NewsSlider posts={featuredPosts.length > 0 ? featuredPosts : publishedArticles} />
               </div>
             </div>
           </section>
@@ -175,7 +118,7 @@ const Index = () => {
       )}
 
       {/* Recent News / Search Results */}
-      <section className={`py-12 ${isSearching ? 'pt-8' : ''} ${!isSearching ? 'bg-white' : 'bg-white'}`}>
+      <section className={`py-12 ${isSearching ? 'pt-8' : ''} bg-white`}>
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">
             {isSearching ? `Search Results for "${searchQuery}"` : 'Latest News'}

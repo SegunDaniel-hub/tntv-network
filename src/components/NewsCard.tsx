@@ -1,15 +1,14 @@
-
 import { Calendar, User, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 interface NewsPost {
   id: string;
   title: string;
-  excerpt: string;
+  excerpt: string | null;
   content: string;
   author: string;
-  date: string;
-  image?: string;
+  created_at: string;
+  image?: string | null;
   category: string;
 }
 
@@ -43,7 +42,7 @@ const NewsCard = ({ post }: NewsCardProps) => {
           </span>
           <div className="flex items-center gap-1">
             <Calendar className="h-3 w-3" />
-            <span>{new Date(post.date).toLocaleDateString()}</span>
+            <span>{new Date(post.created_at).toLocaleDateString()}</span>
           </div>
         </div>
         
