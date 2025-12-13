@@ -1,52 +1,28 @@
-
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import Header from '../components/Header';
 import NewsCard from '../components/NewsCard';
-
-interface NewsPost {
-  id: string;
-  title: string;
-  excerpt: string;
-  content: string;
-  author: string;
-  date: string;
-  image?: string;
-  category: string;
-  featured?: boolean;
-}
+import { useArticles, NewsArticle } from '@/hooks/useArticles';
 
 const CategoryPage = () => {
   const { category } = useParams<{ category: string }>();
-  const [posts, setPosts] = useState<NewsPost[]>([]);
-  const [filteredPosts, setFilteredPosts] = useState<NewsPost[]>([]);
+  const { getArticlesByCategory } = useArticles();
+  const [filteredPosts, setFilteredPosts] = useState<NewsArticle[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Load posts from localStorage
-    const savedPosts = localStorage.getItem('news_posts');
-    if (savedPosts) {
-      const parsedPosts = JSON.parse(savedPosts);
-      setPosts(parsedPosts);
-    }
-  }, []);
+    const fetchCategoryPosts = async () => {
+      if (!category) return;
+      
+      setIsLoading(true);
+      const posts = await getArticlesByCategory(category);
+      setFilteredPosts(posts);
+      setIsLoading(false);
+    };
 
-  useEffect(() => {
-    if (category && posts.length > 0) {
-      let categoryPosts: NewsPost[];
-      
-      // Handle special case for "featured" category
-      if (category.toLowerCase() === 'featured') {
-        categoryPosts = posts.filter(post => post.featured === true);
-      } else {
-        categoryPosts = posts.filter(
-          post => post.category.toLowerCase() === category.toLowerCase()
-        );
-      }
-      
-      setFilteredPosts(categoryPosts);
-    }
-  }, [category, posts]);
+    fetchCategoryPosts();
+  }, [category]);
 
   const categoryTitle = category ? 
     (category.toLowerCase() === 'featured' ? 'Featured' : category.charAt(0).toUpperCase() + category.slice(1)) 
@@ -57,7 +33,6 @@ const CategoryPage = () => {
       <Header />
       
       <div className="container mx-auto px-4 py-8">
-        {/* Back Button */}
         <Link 
           to="/" 
           className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 mb-6 transition-colors"
@@ -66,7 +41,6 @@ const CategoryPage = () => {
           Back to Home
         </Link>
 
-        {/* Category Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
             {categoryTitle} {category?.toLowerCase() === 'featured' ? 'Stories' : 'News'}
@@ -79,8 +53,12 @@ const CategoryPage = () => {
           </p>
         </div>
 
-        {/* Posts Grid */}
-        {filteredPosts.length > 0 ? (
+        {isLoading ? (
+          <div className="text-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+            <p className="mt-4 text-gray-600">Loading articles...</p>
+          </div>
+        ) : filteredPosts.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredPosts.map((post) => (
               <NewsCard key={post.id} post={post} />
