@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Calendar, User, ArrowLeft, Facebook, Twitter, Copy } from 'lucide-react';
+import { Helmet } from 'react-helmet';
 import Header from '../components/Header';
 import { useArticles, NewsArticle as NewsArticleType } from '@/hooks/useArticles';
 import { toast } from 'sonner';
@@ -12,43 +13,10 @@ const NewsArticle = () => {
   const [relatedPosts, setRelatedPosts] = useState<NewsArticleType[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const updateMetaTags = (post: NewsArticleType) => {
-    document.title = `${post.title} - TNTV Network`;
-    
-    const updateMetaTag = (property: string, content: string) => {
-      let metaTag = document.querySelector(`meta[property="${property}"]`);
-      if (!metaTag) {
-        metaTag = document.createElement('meta');
-        metaTag.setAttribute('property', property);
-        document.head.appendChild(metaTag);
-      }
-      metaTag.setAttribute('content', content);
-    };
-
-    const updateTwitterTag = (name: string, content: string) => {
-      let metaTag = document.querySelector(`meta[name="${name}"]`);
-      if (!metaTag) {
-        metaTag = document.createElement('meta');
-        metaTag.setAttribute('name', name);
-        document.head.appendChild(metaTag);
-      }
-      metaTag.setAttribute('content', content);
-    };
-
-    updateMetaTag('og:title', post.title);
-    updateMetaTag('og:description', post.excerpt || '');
-    updateMetaTag('og:type', 'article');
-    updateMetaTag('og:url', window.location.href);
-    
-    if (post.image) {
-      updateMetaTag('og:image', post.image);
-    }
-
-    updateTwitterTag('twitter:title', post.title);
-    updateTwitterTag('twitter:description', post.excerpt || '');
-    if (post.image) {
-      updateTwitterTag('twitter:image', post.image);
-    }
+  const getAbsoluteUrl = (url: string | null | undefined): string => {
+    if (!url) return '';
+    if (url.startsWith('http')) return url;
+    return `${window.location.origin}${url.startsWith('/') ? '' : '/'}${url}`;
   };
 
   useEffect(() => {
@@ -60,8 +28,6 @@ const NewsArticle = () => {
       setPost(foundPost);
       
       if (foundPost) {
-        updateMetaTags(foundPost);
-        
         const related = articles
           .filter(p => p.id !== id && p.category === foundPost.category && p.published)
           .slice(0, 3);
@@ -125,8 +91,24 @@ const NewsArticle = () => {
     );
   }
 
+  const articleUrl = `${window.location.origin}/article/${post.id}`;
+  const articleImage = getAbsoluteUrl(post.image);
+
   return (
     <div className="min-h-screen bg-gray-50">
+      <Helmet>
+        <title>{post.title} - TNTV Network</title>
+        <meta name="description" content={post.excerpt || post.title} />
+        <meta property="og:title" content={post.title} />
+        <meta property="og:description" content={post.excerpt || ''} />
+        <meta property="og:type" content="article" />
+        <meta property="og:url" content={articleUrl} />
+        {articleImage && <meta property="og:image" content={articleImage} />}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={post.title} />
+        <meta name="twitter:description" content={post.excerpt || ''} />
+        {articleImage && <meta name="twitter:image" content={articleImage} />}
+      </Helmet>
       <Header />
       
       <article className="container mx-auto px-4 py-8">
