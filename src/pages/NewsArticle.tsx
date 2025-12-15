@@ -103,11 +103,11 @@ const NewsArticle = () => {
         <meta property="og:description" content={post.excerpt || ''} />
         <meta property="og:type" content="article" />
         <meta property="og:url" content={articleUrl} />
-        {articleImage && <meta property="og:image" content={articleImage} />}
+        <meta property="og:image" content={`${window.location.origin}/og?id=${post.id}`} />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={post.title} />
         <meta name="twitter:description" content={post.excerpt || ''} />
-        {articleImage && <meta name="twitter:image" content={articleImage} />}
+        <meta name="twitter:image" content={`${window.location.origin}/og?id=${post.id}`} />
       </Helmet>
       <Header />
       
@@ -120,7 +120,7 @@ const NewsArticle = () => {
             <ArrowLeft className="h-4 w-4" />
             Back to Home
           </Link>
-
+          
           <div className="bg-white rounded-lg shadow-md overflow-hidden mb-8">
             {post.image && (
               <div className="h-64 md:h-96">
