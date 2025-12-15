@@ -84,8 +84,8 @@ When shared on social media, the article's image, title, and excerpt will appear
 
 ## Contact Information
 
-- **Phone:** +234 816 335 3722
-- **WhatsApp:** +234 817 371 8509
+- **Phone:** +234 708 951 3080
+- **WhatsApp:** +234 708 951 3080
 - **Instagram:** [@tntvnetwork](https://instagram.com/tntvnetwork)
 - **Facebook:** [TnTvNetwork](https://facebook.com/TnTvNetwork)
 

@@ -104,7 +104,7 @@ const Header = () => {
                 <Facebook className="h-5 w-5" />
               </a>
               <a
-                href="https://wa.me/2348173718509"
+                href="https://wa.me/2347089513080"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-2 text-gray-600 hover:text-green-600 transition-colors"
@@ -112,7 +112,7 @@ const Header = () => {
                 <MessageCircle className="h-5 w-5" />
               </a>
               <a
-                href="tel:+2348163353722"
+                href="tel:+2347089513080"
                 className="p-2 text-gray-600 hover:text-blue-600 transition-colors"
               >
                 <Phone className="h-5 w-5" />
@@ -205,7 +205,7 @@ const Header = () => {
                   <Facebook className="h-5 w-5" />
                 </a>
                 <a
-                  href="https://wa.me/2348173718509"
+                  href="https://wa.me/2347089513080"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="p-2 text-gray-600 hover:text-green-600 transition-colors"
@@ -213,7 +213,7 @@ const Header = () => {
                   <MessageCircle className="h-5 w-5" />
                 </a>
                 <a
-                  href="tel:+2348163353722"
+                  href="tel:+2347089513080"
                   className="p-2 text-gray-600 hover:text-blue-600 transition-colors"
                 >
                   <Phone className="h-5 w-5" />
