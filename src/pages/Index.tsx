@@ -168,11 +168,11 @@ const Index = () => {
               <div className="space-y-3 text-blue-200">
                 <div className="flex items-center gap-3">
                   <Phone className="h-5 w-5" />
-                  <span>+234 816 335 3722</span>
+                  <span>+234 708 951 3080</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <MessageCircle className="h-5 w-5" />
-                  <span>+234 817 371 8509</span>
+                  <span>+234 708 951 3080</span>
                 </div>
                 <div className="flex items-center space-x-4 mt-4">
                   <a href="https://www.instagram.com/tntvnetwork/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-white transition-colors">
