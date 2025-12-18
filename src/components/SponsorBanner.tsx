@@ -2,16 +2,18 @@ import nccLogo from "@/assets/ncc-sponsor.png";
 
 const SponsorBanner = () => {
   return (
-    <div className="w-full bg-white border-b border-gray-200 py-2 px-4">
-      <div className="max-w-7xl mx-auto flex items-center justify-center gap-3">
-        <span className="text-sm text-gray-600 font-medium">Sponsored by:</span>
-        <img 
-          src={nccLogo} 
-          alt="Nigerian Communications Commission" 
-          className="h-10 object-contain"
-        />
-      </div>
-    </div>
+    <a 
+      href="https://ncc.gov.ng" 
+      target="_blank" 
+      rel="noopener noreferrer"
+      className="fixed right-4 top-1/2 -translate-y-1/2 z-50 bg-white rounded-lg shadow-lg p-2 hover:shadow-xl transition-shadow duration-200"
+    >
+      <img 
+        src={nccLogo} 
+        alt="Nigerian Communications Commission" 
+        className="h-16 w-auto object-contain"
+      />
+    </a>
   );
 };
 
