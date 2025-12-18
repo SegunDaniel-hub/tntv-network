@@ -2,10 +2,28 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PlusCircle, Edit, Trash2, LogOut, X, Upload, Star, Shield } from 'lucide-react';
 import { toast } from 'sonner';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 import Header from '../components/Header';
 import { useAuth } from '@/hooks/useAuth';
 import { useArticles, ArticleFormData } from '@/hooks/useArticles';
 
+const quillModules = {
+  toolbar: [
+    [{ 'header': [1, 2, 3, false] }],
+    ['bold', 'italic', 'underline', 'strike'],
+    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+    ['blockquote', 'code-block'],
+    ['link', 'image'],
+    ['clean']
+  ],
+};
+
+const quillFormats = [
+  'header', 'bold', 'italic', 'underline', 'strike',
+  'list', 'bullet', 'blockquote', 'code-block',
+  'link', 'image'
+];
 const AdminDashboard = () => {
   const { user, isAdmin, isLoading: authLoading, signOut } = useAuth();
   const { articles, isLoading: articlesLoading, createArticle, updateArticle, deleteArticle, toggleFeatured, fetchArticles } = useArticles();
@@ -419,14 +437,14 @@ const AdminDashboard = () => {
                   <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-2">
                     Content *
                   </label>
-                  <textarea
-                    id="content"
-                    name="content"
+                  <ReactQuill
+                    theme="snow"
                     value={formData.content}
-                    onChange={handleInputChange}
-                    rows={8}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    required
+                    onChange={(value) => setFormData(prev => ({ ...prev, content: value }))}
+                    modules={quillModules}
+                    formats={quillFormats}
+                    className="bg-white rounded-lg"
+                    style={{ minHeight: '200px' }}
                   />
                 </div>
 

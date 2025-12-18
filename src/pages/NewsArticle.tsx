@@ -182,11 +182,10 @@ const NewsArticle = () => {
           </div>
 
           <div className="bg-white rounded-lg shadow-md p-6 md:p-8 mb-8">
-            <div className="prose prose-lg max-w-none">
-              <p className="text-gray-700 leading-relaxed whitespace-pre-line">
-                {post.content}
-              </p>
-            </div>
+            <div 
+              className="prose prose-lg max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-a:text-blue-600 prose-strong:text-gray-900 prose-ul:text-gray-700 prose-ol:text-gray-700 prose-blockquote:border-blue-500 prose-blockquote:text-gray-600"
+              dangerouslySetInnerHTML={{ __html: post.content }}
+            />
           </div>
 
           {relatedPosts.length > 0 && (
